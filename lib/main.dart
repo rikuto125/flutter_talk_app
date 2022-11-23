@@ -1,6 +1,7 @@
 import 'package:firebase_talk_app/firestore/room_firestore.dart';
 import 'package:firebase_talk_app/firestore/user_firestore.dart';
 import 'package:firebase_talk_app/pages/top_page.dart';
+import 'package:firebase_talk_app/utils/shared_prefes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -10,8 +11,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final myUid = await UserFirestore.createUser();
-  if(myUid != null)RoomFirestore.createRoom(myUid);
+  await SharedPrefs().setPrefsInstance();
+  String? uid = SharedPrefs.fetchUid();
+  if (uid == null) {
+    await UserFirestore.createUser();
+  }
   runApp(const MyApp());
 }
 
