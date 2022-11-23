@@ -14,3 +14,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+## 注意事項
+エミュレータの時間のデフォルトはUTCなので、日本時間に変更する必要がある。
+UTCに変更するには、エミュレータの設定を開き、 「Date & Time」の「Time Zone」を「Asia/Tokyo」に変更する。
+変更しないと、FirebaseのTimestampがUTCになってしまいトークルームがおかしくなる。
