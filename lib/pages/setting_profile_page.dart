@@ -1,9 +1,12 @@
-
-
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_talk_app/firestore/user_firestore.dart';
+import 'package:firebase_talk_app/utils/shared_prefes.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../model/user.dart';
 
 class SettingProfilePage extends StatefulWidget {
   const SettingProfilePage({Key? key}) : super(key: key);
@@ -14,7 +17,9 @@ class SettingProfilePage extends StatefulWidget {
 
 class _SettingProfilePageState extends State<SettingProfilePage> {
   File? image;
+  String imagePath = '';
   final ImagePicker _picker = ImagePicker();
+  final TextEditingController _nameController = TextEditingController();
 
   Future<void> selectImage() async {
     XFile? selected = await _picker.pickImage(source: ImageSource.gallery);
@@ -24,6 +29,13 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
     setState(() {
       image = File(selected.path);
     });
+  }
+
+  Future<void> uploadImage() async{
+    String path = image!.path.substring(image!.path.lastIndexOf('/') + 1);
+    final ref = FirebaseStorage.instance.ref(path);
+    final storageImage = await ref.putFile(image!);
+    imagePath = await storageImage.ref.getDownloadURL();
   }
 
 
@@ -39,9 +51,11 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
         child: Column(
           children: [
             Row(
-            children: const [
-              SizedBox(width: 150 ,child: Text('Name')),
-              Expanded(child: TextField()),//ExpandedでTextFieldを横幅いっぱいにする
+            children: [
+              const SizedBox(width: 150 ,child: Text('Name')),
+              Expanded(child: TextField(
+                controller: _nameController,
+              )),//ExpandedでTextFieldを横幅いっぱいにする
             ],
           ),
           const SizedBox(height: 30),
@@ -53,8 +67,9 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
                 child: Container(
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                      onPressed: () {
-                        selectImage();
+                      onPressed: () async {
+                        await selectImage();
+                        uploadImage();
                   },
                       child: const Text('画像を選択')
                   ),
@@ -75,8 +90,13 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
               width: 150,
               height: 50,
               child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                  onPressed: () async{
+                    User newProfile = User(
+                      name: _nameController.text,
+                      imagePath : imagePath,
+                      uid : SharedPrefs.fetchUid()!,
+                    );
+                    await UserFirestore.updateUser(newProfile);
                   },
                   child: const Text('編集')
               ),
