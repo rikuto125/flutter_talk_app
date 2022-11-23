@@ -18,6 +18,8 @@ class TalkRoomPage extends StatefulWidget {
 }
 
 class _TalkRoomPageState extends State<TalkRoomPage> {
+  final TextEditingController _textEditingController = TextEditingController(); //テキストフィールドの内容を取得するためのコントローラー
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +49,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                       itemBuilder: (context, index) {
                         final doc = snapshot.data!.docs[index];
                         final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                        Message message = Message(
+                        final Message message = Message(
                           message: data['message'],
                           isMe: SharedPrefs.fetchUid() == data['sender_id'],
                           sendTime: data['send_time'],
@@ -65,8 +67,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: message.isMe
-                                        ? Colors.blue
-                                        : Colors.green, //自分のメッセージなら青、相手のメッセージなら白
+                                        ? Colors.green
+                                        : Colors.blue, //自分のメッセージなら青、相手のメッセージなら白
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   //margin: const EdgeInsets.all(10),
@@ -99,6 +101,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                     Expanded(child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextField(
+                          controller: _textEditingController,
                           decoration: InputDecoration(
                           contentPadding: EdgeInsets.only(left: 10),
                           hintText: 'メッセージを入力',
@@ -108,8 +111,14 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         ),
                       ),
                     )),
-                    IconButton(onPressed: () {
-
+                    IconButton(
+                        onPressed: () async{
+                      //print(_textEditingController.text);
+                          await RoomFirestore.sendMessage(
+                          roomId : widget.talkRoom.roomId,
+                          message : _textEditingController.text
+                      );
+                      _textEditingController.clear();
                     },
                         icon: const Icon(Icons.send))
                   ]

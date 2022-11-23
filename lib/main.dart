@@ -16,6 +16,7 @@ void main() async {
   if (uid == null) {
     await UserFirestore.createUser();
   }
+  print(uid);
   runApp(const MyApp());
 }
 

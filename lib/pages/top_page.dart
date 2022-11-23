@@ -42,9 +42,9 @@ class _TopPageState extends State<TopPage> {
                     return const Center(child: CircularProgressIndicator());
                   }else{
                     if (futureSnapshot.hasData){
-                    List<TalkRoom> talkRooms = futureSnapshot.data!;
-                    print("talkRooms ${talkRooms.length}");
-                    return ListView.builder(
+                      List<TalkRoom> talkRooms = futureSnapshot.data!;
+                      print("talkRooms ${talkRooms.length}");
+                      return ListView.builder(
                         itemCount: talkRooms.length,
                         itemBuilder: (context, index) {
                           //InkWellを使うことで、タップすることができるようになる
@@ -73,8 +73,8 @@ class _TopPageState extends State<TopPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(talkRooms[index].talkUser.name, style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                                      Text(talkRooms[index].lastMessage ?? '', style: TextStyle(fontSize: 15, color: Colors.grey),),
+                                      Text(talkRooms[index].talkUser.name, style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                      Text(talkRooms[index].lastMessage ?? '', style: const TextStyle(fontSize: 15, color: Colors.grey),),
                                     ],
                                   ),
                                 ],

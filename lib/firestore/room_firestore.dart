@@ -40,7 +40,7 @@ class RoomFirestore{
             talkUserUid = userId;
           }
         }
-        print(talkUserUid);
+        print("talkUserUid $talkUserUid");
         User? talkUser = await UserFirestore.fetchProfile(talkUserUid);
         if (talkUser == null) return null;
         final talkRoom = TalkRoom(
@@ -48,8 +48,9 @@ class RoomFirestore{
           talkUser: talkUser,
           lastMessage: data['last_message'],
         );
-        print(talkRooms.length);
+        //print(talkRooms.length);
         talkRooms.add(talkRoom);
+        print(talkRooms);
       }
       return talkRooms;
     } catch (e) {
@@ -60,5 +61,18 @@ class RoomFirestore{
 
   static Stream<QuerySnapshot> fetchMessageSnapshot(String roomId) {
     return _roomCollection.doc(roomId).collection('message').orderBy('send_time', descending: true).snapshots();
+  }
+
+  static Future<void> sendMessage({required String roomId, required String message}) async {
+    try {
+      await _roomCollection.doc(roomId).collection('message').add({
+        'message': message,
+        'sender_id': SharedPrefs.fetchUid(),
+        'send_time': Timestamp.now(),// 送信時間　emulaterの時はUTCになるので注意
+
+      });
+    } catch (e) {
+      print("Error sending message $e");
+    }
   }
 }
