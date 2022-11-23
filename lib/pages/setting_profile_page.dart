@@ -1,4 +1,9 @@
+
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingProfilePage extends StatefulWidget {
   const SettingProfilePage({Key? key}) : super(key: key);
@@ -8,6 +13,21 @@ class SettingProfilePage extends StatefulWidget {
 }
 
 class _SettingProfilePageState extends State<SettingProfilePage> {
+  File? image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> selectImage() async {
+    XFile? selected = await _picker.pickImage(source: ImageSource.gallery);
+    if (selected == null) return;
+
+    //setStateとは、画面を再描画するという意味
+    setState(() {
+      image = File(selected.path);
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +54,7 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
                   alignment: Alignment.center,
                   child: ElevatedButton(
                       onPressed: () {
+                        selectImage();
                   },
                       child: const Text('画像を選択')
                   ),
@@ -41,6 +62,14 @@ class _SettingProfilePageState extends State<SettingProfilePage> {
               )
             ],
           ),
+          const SizedBox(height: 30),
+            image == null
+                ? const SizedBox()
+                : SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Image.file(image!, fit: BoxFit.cover),
+                  ),
             const SizedBox(height: 50,),
             SizedBox(
               width: 150,

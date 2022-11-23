@@ -71,6 +71,11 @@ class RoomFirestore{
         'send_time': Timestamp.now(),// 送信時間　emulaterの時はUTCになるので注意
 
       });
+
+      // 最新のメッセージを更新　→　ルーム一覧に表示するため
+      await _roomCollection.doc(roomId).update({
+        'last_message': message,
+      });
     } catch (e) {
       print("Error sending message $e");
     }
